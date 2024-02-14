@@ -6,13 +6,16 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Google.Cloud.Translation.V2;
 
 class Program
 {
     static void Main()
     {
         string filePath = "G:\\Projects\\Translator\\Translator\\dictionary.xml";
-        string apiKey = "203cbf2c-5eea-913c-fa0c-f0c2212528f6:fx";
+        //string apiKey = "AIzaSyCVhxd4ZzblcY5gz7tBtOK7igasp6OPJ1s"; //GTranslate
+        string apiKey = "203cbf2c-5eea-913c-fa0c-f0c2212528f6:fx"; //Deepl abv.bg
+        //string apiKey = "b15458c6-f076-e35d-05dd-366e404127d2:fx"; //Deepl gmail
 
         try
         {
@@ -63,8 +66,8 @@ class Program
 
         foreach (XElement valueElement in valueElements)
         {
-            //Тут указать язык С Которого переводить
-            var sourValueElement = valueElement.ElementsAfterSelf("Value").LastOrDefault(e => e.Attribute("Lang")?.Value == "RU");
+            //Тут указать язык С Которого переводить, если он стоит перед нужным Before / After
+            var sourValueElement = valueElement.ElementsBeforeSelf("Value").LastOrDefault(e => e.Attribute("Lang")?.Value == "EN");
 
             if (sourValueElement != null && !string.IsNullOrEmpty(sourValueElement.Value))
             {
@@ -85,17 +88,27 @@ class Program
     {
         using (HttpClient client = new HttpClient())
         {
-            string apiUrl = "https://api-free.deepl.com/v2/translate";
+            string apiUrl = "https://api-free.deepl.com/v2/translate"; //DeepL
+            //string apiUrl = "https://translation.googleapis.com/language/translate/v2"; //GTranslate
             string targetLanguage = "ES";
 
             // Создание параметров запроса
+            //DeePL
             var parameters = new Dictionary<string, string>
             {
                 { "auth_key", apiKey },
                 { "text", text },
-                { "source_lang", "RU" },
+                { "source_lang", "EN" },
                 { "target_lang", targetLanguage }
             };
+            //GTr
+            //            var parameters = new Dictionary<string, string>
+            //{
+            //                { "key", apiKey },
+            //                { "q", text },  
+            //                { "source", "en" },
+            //                { "target", targetLanguage }
+            //            };
 
             // Отправка POST-запроса к API DeepL
             var response = await client.PostAsync(apiUrl, new FormUrlEncodedContent(parameters));
@@ -104,9 +117,13 @@ class Program
             // Проверка ответа от API
             if (response.IsSuccessStatusCode)
             {
+                //Console.WriteLine("Response Content: " + responseContent);
                 // Извлечение переведенного текста из ответа JSON
                 var responseObject = Newtonsoft.Json.JsonConvert.DeserializeObject<TranslationResponse>(responseContent);
+                //DeePL
                 string translatedText = responseObject.Translations.FirstOrDefault()?.Text;
+                //Gtr
+                //string translatedText = responseObject.Data.Translations.FirstOrDefault()?.TranslatedText;
 
                 return translatedText;
             }
@@ -118,7 +135,22 @@ class Program
         }
     }
 }
+//Gtr
+//public class TranslationResponse
+//{
+//    public Data Data { get; set; }
+//}
 
+//public class Data
+//{
+//    public List<TranslationItem> Translations { get; set; }
+//}
+
+//public class TranslationItem
+//{
+//    public string TranslatedText { get; set; }
+//}
+//DeePL
 public class TranslationResponse
 {
     public List<TranslationItem> Translations { get; set; }
