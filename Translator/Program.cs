@@ -13,9 +13,9 @@ class Program
     static void Main()
     {
         string filePath = "G:\\Projects\\Translator\\Translator\\dictionary.xml";
-        //string apiKey = "AIzaSyCVhxd4ZzblcY5gz7tBtOK7igasp6OPJ1s"; //GTranslate
-        string apiKey = "203cbf2c-5eea-913c-fa0c-f0c2212528f6:fx"; //Deepl abv.bg
-        //string apiKey = "b15458c6-f076-e35d-05dd-366e404127d2:fx"; //Deepl gmail
+        //string apiKey = "*"; //GTranslate
+        string apiKey = "*"; //Deepl abv.bg
+        //string apiKey = "*"; //Deepl gmail
 
         try
         {
